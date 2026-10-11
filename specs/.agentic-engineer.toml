@@ -1,0 +1,4 @@
+apiVersion = "agentic-engineer/v1"
+name = "currency-converter-take"
+createdAt = "2026-10-11T01:14:49Z"
+idea = "I want to build a currency converter that take real time data and convert the currency. It should also maintain a log of converted ammounts"
