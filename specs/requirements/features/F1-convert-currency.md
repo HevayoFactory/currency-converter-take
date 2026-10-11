@@ -18,6 +18,8 @@ A user converts an amount from one currency to another using real-time exchange 
 - Users can convert between all major world currencies, identified by their ISO 4217 codes, limited to what the rate source supports.
 - Amounts must be positive numbers; invalid input shows a message instead of a result.
 - A conversion is recorded in the log once the user has settled on a result, not on every keystroke.
+- A result counts as settled when the amount and both currencies have not changed for 2 seconds. *assumed*
+- The "from" and "to" currencies must differ; choosing the same currency for both shows a message instead of a result, and nothing is logged. *assumed*
 
 ## Out of Scope
 

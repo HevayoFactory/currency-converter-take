@@ -1,0 +1,18 @@
+{
+  "name": "currency-api",
+  "type": "service",
+  "version": "0.1.0",
+  "language": "Ballerina",
+  "buildpack": "docker",
+  "appPath": "currency-api",
+  "entrypoint": "deployment/service",
+  "exposure": "internet",
+  "dependencies": [
+    { "kind": "platform-resource", "name": "user-auth", "resourceType": "thunder-app" },
+    { "kind": "platform-resource", "name": "conversions-db", "resourceType": "postgres-cnpg" },
+    { "kind": "external", "name": "exchange-rate-service", "description": "Fetches live exchange rates to quote a conversion, to stamp each logged entry with its rate, and to list supported currencies." }
+  ],
+  "description": "The single backend: quotes conversions from live rates fetched from the exchange-rate service, lists supported currencies, and owns each user's conversion log (create, list newest first, delete) in its own PostgreSQL database, scoped to the signed-in caller. It is a separate deployable from the web app because the browser must never hold the rate service credential or write another user's log. It does not render UI and does not issue tokens.",
+  "stories": ["F1.1", "F1.2", "F1.3", "F1.4", "F1.5", "F1.6", "F2.1", "F2.2", "F2.3"],
+  "skillsPinned": ["openapi-conventions", "ballerina", "thunder-authentication", "api-management"]
+}

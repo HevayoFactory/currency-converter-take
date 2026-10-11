@@ -1,0 +1,39 @@
+{
+  "version": 3,
+  "permissions": [
+    {
+      "resource": "rates",
+      "component": "currency-api",
+      "description": "Live exchange rates used to quote a conversion",
+      "actions": [
+        { "handle": "read", "description": "Get a live quote that converts an amount between two currencies; nothing is saved" }
+      ]
+    },
+    {
+      "resource": "conversions",
+      "component": "currency-api",
+      "description": "The conversion log of the signed-in user",
+      "actions": [
+        { "handle": "read", "description": "List the caller's own logged conversions" },
+        { "handle": "create", "description": "Log a conversion for the caller" },
+        { "handle": "delete", "description": "Delete one of the caller's own log entries" }
+      ]
+    }
+  ],
+  "groups": [
+    { "name": "Currency Converter Users", "description": "People allowed to use the currency converter" }
+  ],
+  "roles": [
+    {
+      "name": "User",
+      "description": "Converts amounts using live rates and reviews or deletes entries in their own conversion log. Never sees another person's log.",
+      "stories": ["F1.1", "F1.2", "F1.3", "F1.4", "F1.5", "F1.6", "F2.1", "F2.2", "F2.3"],
+      "grants": ["rates:read", "conversions:read", "conversions:create", "conversions:delete"],
+      "assignTo": ["Currency Converter Users"]
+    }
+  ],
+  "testUsers": [
+    { "username": "test-user", "roles": ["User"] },
+    { "username": "test-user-2", "roles": ["User"] }
+  ]
+}

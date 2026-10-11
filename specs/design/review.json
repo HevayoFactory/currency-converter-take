@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "artifacts": [
+    {
+      "path": "specs/design/design.cell",
+      "checkedHash": "4167cca3aee26db6336b113dee99e105a17d57c0c1034af4626918e4de4bdbb7"
+    },
+    {
+      "path": "specs/design/domain-model.md",
+      "checkedHash": "e64d051c173bde2dd9b99d813bd75639ff5c51fc0347cf885e016cf5e4c09ceb"
+    },
+    {
+      "path": "specs/design/components/currency-webapp/prototype.json",
+      "checkedHash": "ba2380041457875eab2b8ef39b35debfadf37500d556afb03d6e1a5f1c5b8d27"
+    },
+    {
+      "path": "specs/design/components/currency-api/openapi.yaml",
+      "checkedHash": "b19d35dfa8e3341b9c08abc653ba20894ab1967335d1b9ab9473218810cbfffd"
+    },
+    {
+      "path": "specs/design/security.json",
+      "checkedHash": "b6062e0a541e21810d51f51f90394c30fdf46e0ba6f31e8ca8802fc23720bc48"
+    },
+    {
+      "path": "specs/design/flows/convert-and-log.md",
+      "checkedHash": "4bf49e2a909b27dafb5b1f376af5518204e139a51229a40732143e9f9c15dc72"
+    },
+    {
+      "path": "specs/design/decisions.md",
+      "checkedHash": "cddc6de85831545ee73dec780bdf593f6f591bbd1be83adc27f740eaced783ec"
+    }
+  ]
+}

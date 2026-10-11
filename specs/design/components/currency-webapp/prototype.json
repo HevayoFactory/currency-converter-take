@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 3,
+  "name": "Currency Converter",
+  "entryScreen": "screen.convert",
+  "roles": [{ "id": "User", "name": "User" }],
+  "states": [
+    { "id": "state.default", "name": "Default" },
+    { "id": "state.empty", "name": "Empty log" },
+    { "id": "state.validation-error", "name": "Invalid input" },
+    { "id": "state.failed", "name": "Rates unavailable" }
+  ],
+  "screens": [
+    { "id": "screen.convert", "name": "Convert", "roleIds": ["User"] },
+    { "id": "screen.log", "name": "Conversion log", "roleIds": ["User"] },
+    { "id": "screen.account", "name": "Account", "roleIds": ["User"] },
+    { "id": "screen.settings", "name": "Settings", "roleIds": ["User"] },
+    { "id": "screen.signed-out", "name": "Signed out", "roleIds": ["User"] }
+  ],
+  "flows": [
+    { "id": "flow.convert", "name": "Convert an amount", "roleId": "User", "screenIds": ["screen.convert", "screen.log"] },
+    { "id": "flow.review-log", "name": "Review and delete log entries", "roleId": "User", "screenIds": ["screen.log"] }
+  ]
+}

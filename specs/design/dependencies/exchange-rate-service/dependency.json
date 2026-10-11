@@ -1,0 +1,13 @@
+{
+  "name": "exchange-rate-service",
+  "resource": {
+    "name": "exchange-rate-service",
+    "description": "Supplies real-time exchange rates between world currencies, used to convert amounts and to list the supported currencies."
+  },
+  "suggestions": [
+    { "name": "Open Exchange Rates", "style": "rest-api", "description": "Rates for 170+ currencies updated frequently; API key required, free tier has a USD base only." },
+    { "name": "ExchangeRate-API", "style": "rest-api", "description": "Simple pair-conversion endpoint with an API key; free tier updates daily." },
+    { "name": "Frankfurter", "style": "rest-api", "description": "Free, keyless, European Central Bank reference rates for about 30 currencies, updated on working days." },
+    { "name": "Fixer", "style": "rest-api", "description": "Commercial rates API with an API key; paid plans for real-time updates." }
+  ]
+}

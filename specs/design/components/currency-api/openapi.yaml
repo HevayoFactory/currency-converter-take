@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: Currency API
+  version: 0.1.0
+servers:
+  - url: /
+security:
+  - oauth2: []
+paths:
+  /currencies:
+    get:
+      operationId: listCurrencies
+      summary: Currencies the rate source supports
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 200, maximum: 200 } }
+        - { name: offset, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        '200':
+          description: Supported currencies.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Currency' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '503': { $ref: '#/components/responses/RatesUnavailable' }
+  /quotes:
+    get:
+      operationId: getQuote
+      summary: Live quote converting an amount; nothing is logged
+      security:
+        - oauth2: [rates:read]
+      parameters:
+        - { name: from, in: query, required: true, schema: { type: string, pattern: '^[A-Z]{3}$' } }
+        - { name: to, in: query, required: true, schema: { type: string, pattern: '^[A-Z]{3}$' } }
+        - { name: amount, in: query, required: true, schema: { type: number, exclusiveMinimum: true, minimum: 0 } }
+      responses:
+        '200':
+          description: The converted amount with the rate used.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quote' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '503': { $ref: '#/components/responses/RatesUnavailable' }
+  /me/conversions:
+    get:
+      operationId: listMyConversions
+      summary: The caller's logged conversions, newest first
+      security:
+        - oauth2: [conversions:read]
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 20, maximum: 100 } }
+        - { name: offset, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        '200':
+          description: A page of the caller's log entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count, data]
+                properties:
+                  count: { type: integer, description: total matching items }
+                  next: { type: string, nullable: true, description: relative URI of the next page }
+                  previous: { type: string, nullable: true, description: relative URI of the previous page }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Conversion' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      operationId: createMyConversion
+      summary: Log a conversion for the caller at a freshly fetched rate
+      security:
+        - oauth2: [conversions:create]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ConversionRequest' }
+      responses:
+        '201':
+          description: The logged entry.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Conversion' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '503': { $ref: '#/components/responses/RatesUnavailable' }
+  /me/conversions/{conversionId}:
+    delete:
+      operationId: deleteMyConversion
+      summary: Delete one of the caller's log entries
+      security:
+        - oauth2: [conversions:delete]
+      parameters:
+        - { name: conversionId, in: path, required: true, schema: { type: string } }
+      responses:
+        '204':
+          description: The entry was deleted.
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorize
+          tokenUrl: /oauth2/token
+          scopes:
+            rates:read: Get a live conversion quote
+            conversions:read: List the caller's logged conversions
+            conversions:create: Log a conversion for the caller
+            conversions:delete: Delete one of the caller's log entries
+  responses:
+    BadRequest:
+      description: The input is invalid.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Not signed in or not permitted.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: The entry does not exist for the caller.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    RatesUnavailable:
+      description: Live rates could not be fetched.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: integer, description: HTTP or application error code }
+        message: { type: string, description: short human-readable label }
+        description: { type: string, description: detailed explanation }
+        moreInfo: { type: string, description: URI to documentation }
+    Currency:
+      type: object
+      required: [code, name]
+      properties:
+        code: { type: string, description: ISO 4217 code }
+        name: { type: string, description: Currency name }
+    Quote:
+      type: object
+      required: [fromCurrency, toCurrency, amount, result, rate, rateFetchedAt]
+      properties:
+        fromCurrency: { type: string }
+        toCurrency: { type: string }
+        amount: { type: number }
+        result: { type: number, description: amount converted into the to currency }
+        rate: { type: number, description: units of to currency per one unit of from currency }
+        rateFetchedAt: { type: string, format: date-time }
+    ConversionRequest:
+      type: object
+      required: [fromCurrency, toCurrency, amount]
+      properties:
+        fromCurrency: { type: string, pattern: '^[A-Z]{3}$' }
+        toCurrency: { type: string, pattern: '^[A-Z]{3}$', description: must differ from fromCurrency }
+        amount: { type: number, exclusiveMinimum: true, minimum: 0 }
+    Conversion:
+      type: object
+      required: [id, fromCurrency, toCurrency, amount, result, rate, rateFetchedAt, convertedAt]
+      properties:
+        id: { type: string }
+        fromCurrency: { type: string }
+        toCurrency: { type: string }
+        amount: { type: number }
+        result: { type: number, description: amount converted into the to currency }
+        rate: { type: number, description: units of to currency per one unit of from currency }
+        rateFetchedAt: { type: string, format: date-time }
+        convertedAt: { type: string, format: date-time, description: when the entry was logged }
